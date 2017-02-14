@@ -43,4 +43,16 @@
 			$(this).attr('placeholder', $(this).data('holder'));
 		});
 	});
+	$('.img-bg').each(function() {
+		$(this).parent().css({
+			'background': 'url("'+$(this).attr('src')+'") no-repeat center center',
+			'background-size': 'cover'
+		});
+	});
+	$('.experts__list--nav a').on('click', function(e) {
+		e.preventDefault();
+		$('[data-tab="'+$(this).attr('href')+'"]').show().siblings('[data-tab]').hide();
+		$(this).parent().addClass('active').siblings().removeClass();
+	});
+	$('.experts__list--nav .active a').trigger('click');
 });
