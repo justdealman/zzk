@@ -1,4 +1,53 @@
 ﻿$(function() {
+	var isMobile = false;
+	var justSwitched = false;
+	function detectDevice() {
+		var temp = isMobile;
+		if ( Modernizr.mq('(max-width:999px)') ) {
+			isMobile = true;
+		} else {
+			isMobile = false;
+		}
+		if ( temp == isMobile ) {
+			justSwitched = false;
+		} else {
+			justSwitched = true;
+		}
+	}
+
+	function startApp() {
+		detectDevice();
+		if ( justSwitched ) {
+			if ( isMobile ) {
+				$('.header').prepend('<span class="menu-open"><i></i></span>');
+				$('.nav').prepend('<span class="nav--close"></span>');
+				$('.partners--logos').each(function() {
+					$(this).after('<div class="partners__grid"></div>');
+					var t = $(this).next();
+					$(this).find('img').each(function() {
+						var img = $(this).attr('src');
+						t.append('<div class="partners__item">\
+							<div class="item-partners">\
+								<div class="item-partners__content" style="background:url('+img+') no-repeat 50% 50%;background-size:contain"></div>\
+							</div>\
+						</div>');
+					});
+				});
+			} else {
+				$('.menu-open, .nav--close, .partners__grid').remove();
+				menuClose();
+			}
+		}
+	}
+	startApp();
+	var lastWidth = $(window).width();
+	$(window).on('resize', _.debounce(function() {
+		if ( $(window).width() != lastWidth ) {
+			startApp();
+			lastWidth = $(window).width();
+		}
+	}, 100));
+
 	$('.quotes').slick({
 		slidesToShow: 2,
 		slidesToScroll: 1,
@@ -8,7 +57,16 @@
 		draggable: true,
 		autoplay: true,
 		autoplaySpeed: 5000,
-		adaptiveHeight: true
+		adaptiveHeight: true,
+		responsive: [
+			{
+				breakpoint: 1000,
+				settings: {
+					slidesToShow: 1,
+					autoplay: false
+				}
+			}
+		]
 	});
 	$('.schedule__single--more span').on('click', function(e) {
 		e.preventDefault();
@@ -55,4 +113,18 @@
 		$(this).parent().addClass('active').siblings().removeClass();
 	});
 	$('.experts__list--nav .active a').trigger('click');
+
+	function menuOpen() {
+		$('.nav, .fade-bg').addClass('is-opened');
+	}
+	function menuClose() {
+		$('.nav, .fade-bg').removeClass('is-opened');
+	}
+
+	$(document).on('click', '.menu-open', function() {
+		menuOpen();
+	});
+	$(document).on('click', '.nav--close', function() {
+		menuClose();
+	});
 });
